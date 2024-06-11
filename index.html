@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA</title>
+    <style>
+        body{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #F0F0F0;
+            display: grid;
+            place-content: center;
+            height: 100dvh;
+        }
+
+        main{
+            width: 400px;
+            max-width: 100%;
+            height: 70vh;
+            background: #fff;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgb(0, 0, 0,0.1);
+            padding: 8px;
+            margin-bottom: 16px;
+
+            overflow-y: hidden;
+        }
+
+        ul{
+            display: flex;
+            flex-direction: column;
+            list-style: none;
+            padding: 0;
+        }
+
+        .message{
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin: 4px 8px;
+        }
+
+        .span-name{
+            width: 36px;
+            height: 36px;
+            background: #eee;
+            font-size: 12px;
+            font-weight: 500;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 100%;
+        }
+
+        .span-message{
+            padding: 4px 8px;
+        }
+
+        .user{
+            align-self: flex-end;
+            align-items: flex-end;
+        }
+
+        .bot{
+            align-self: flex-start;
+        }
+
+        .user span, .user p{
+            background-color: rgb(155, 230, 255);
+            border-radius: 20px;
+        }
+
+        .bot span, .bot p{
+            background-color: rgb(203, 208, 210);
+            border-radius: 20px;
+        }
+
+        form{
+            display: flex;
+        }
+
+        form input{
+            border-radius: 20px;
+            flex-grow: 1;
+            border: 0;
+            padding: 8px;
+            margin-right: 8px;
+            border: 1px solid #ccc;
+        }
+
+        form button{
+            background: #09f;
+            border: 0;
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            padding: 8px;
+            transition: all .3s ease;
+        }
+
+        form button:hover{
+            background-color: rgb(4, 48, 78);
+        }
+    </style>
+
+    <script type="module">
+        const $form = document.querySelector('form');
+        const $input = document.querySelector('input');
+        const $template = document.querySelector('#message-template');
+        const $messages = document.querySelector('ul');
+        const $container = document.querySelector('main');
+        const $button = document.querySelector('button');
+
+        $form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const messageText = $input.value.trim();
+
+            if(messageText !== ''){
+                $input.value = '';
+            }
+        });
+
+        function addMessage(text, sender){
+            const clonedTemplate = $template.content.cloneNode(true);
+            const $newMessage = clonedTemplate.querySelector('.message');
+
+            const $who = $newMessage.querySelector('span');
+            const $text = $newMessage.querySelector('p');
+
+            
+        }
+    </script>
+
+</head>
+<body>
+    <main>
+        <ul>
+            <li class="message bot">
+                <span class="span-name">GPT</span>
+                <p class="span-message">Esta es la respuesta del bot</p>
+            </li>
+
+            <li class="message user">
+                <span class="span-name">Tú</span>
+                <p class="span-message">Esta es la respuesta del tuya</p>
+            </li>
+
+            <li class="message user">
+                <span class="span-name">Tú</span>
+                <p class="span-message">Esta es la respuesta ultra larga Lorem ipsum dolor, sit amet consectetur adipisicing elit. Iure, quos!</p>
+            </li>
+
+        </ul>
+    </main>
+
+    <form >
+        <input placeholder="Escribe tu meensaje">
+        <button>Enviar</button>
+    </form>
+
+    <template id="message-template">
+        <li class="message">
+            <span></span>
+            <span></span>
+        </li>
+    </template>
+</body>
+</html>
