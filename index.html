@@ -24,7 +24,8 @@
             padding: 8px;
             margin-bottom: 16px;
 
-            overflow-y: hidden;
+            overflow-y: auto;
+            scroll-behavior: smooth;
         }
 
         ul{
@@ -102,23 +103,86 @@
         form button:hover{
             background-color: rgb(4, 48, 78);
         }
+
+        form button:disabled {
+            background-color: #ccc;
+            opacity: .6;
+            pointer-events: none;
+        }
+
+        small{
+            font-size: 10px;
+            color: #555;
+            position: fixed;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            margin: auto;
+            width: 400px;
+        }
     </style>
 
     <script type="module">
+
+        import {CreateMLCEngine} from "https://esm.run/@mlc-ai/web-llm";
+
+        const SELECTED_MODEL = 'Llama-3-8B-Instruct-q4f32_1-MLC';
+
         const $form = document.querySelector('form');
         const $input = document.querySelector('input');
         const $template = document.querySelector('#message-template');
         const $messages = document.querySelector('ul');
         const $container = document.querySelector('main');
         const $button = document.querySelector('button');
+        const $info = document.querySelector('small')
+        let messages = []
 
-        $form.addEventListener('submit', (event) => {
+        const engine = CreateMLCEngine(
+            SELECTED_MODEL, 
+            {
+                initProgressCalllBack: (info) => {
+                    $info.textContent = `${info.text}%`
+                    console.log('OLAi', info)
+                    
+                    if(info.progress === 1){
+                        $button.removeAttribute('disabled');
+                    }
+                }
+            }
+        );
+
+
+        $form.addEventListener('submit', async (event) => {
             event.preventDefault();
             const messageText = $input.value.trim();
-
+            
             if(messageText !== ''){
                 $input.value = '';
             }
+            addMessage(messageText, 'user');
+            $button.setAttribute('disabled', true);
+
+            const userMessage = {
+                role: 'user',
+                content: messageText
+            }
+            messages.push(userMessage);
+
+            const replyMsg = await engine.chat.completions.create({
+                messages:[
+                    ...messages,
+                    {
+                        role:'user',
+                        content: messageText
+                    }
+                ]
+
+            })
+
+            console.log(replyMsg.choises[0].message)
+            const botMessage = replyMsg.choises[0].message
+            messages.push(botMessages);
+            addMessage(botMessage, 'bot')
         });
 
         function addMessage(text, sender){
@@ -128,7 +192,13 @@
             const $who = $newMessage.querySelector('span');
             const $text = $newMessage.querySelector('p');
 
-            
+            $text.textContent = text;
+            $who.textContent = sender === 'bot' ? 'GPT' : 'Tú';
+            $newMessage.classList.add(sender);
+
+            $messages.appendChild($newMessage);
+            $container.scrollTop = $container.scrollHeight;
+     
         }
     </script>
 
@@ -156,13 +226,14 @@
 
     <form >
         <input placeholder="Escribe tu meensaje">
-        <button>Enviar</button>
+        <button type="submit" disabled>Enviar</button>
     </form>
+    <small></small>
 
     <template id="message-template">
         <li class="message">
             <span></span>
-            <span></span>
+            <p></p>
         </li>
     </template>
 </body>
